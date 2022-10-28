@@ -30,6 +30,9 @@ KEYBOARD = {
 	'Z':(1,3),'X':(2,3),'C':(3,3),'V':(4,3),'B':(5,3),'N':(6,3),'M':(7,3),',':(8,3),'<':(9,3),'.':(10,3),'>':(10,3),'/':(11,3),'?':(11,3)
 }
 
+# State postal-code lookup
+STATE_CODES = {'Alabama':'AL','Alaska':'AK','Arizona':'AZ','Arkansas':'AR','California':'CA','Colorado':'CO','Connecticut':'CT','Delaware':'DE','District of Columbia':'DC','Florida':'FL','Georgia':'GA','Hawaii':'HI','Idaho':'ID','Illinois':'IL','Indiana':'IN','Iowa':'IA','Kansas':'KS','Kentucky':'KY','Louisiana':'LA','Maine':'ME','Maryland':'MD','Massachusetts':'MA','Michigan':'MI','Minnesota':'MN','Mississippi':'MS','Missouri':'MO','Montana':'MT','Nebraska':'NE','Nevada':'NV','New Hampshire':'NH','New Jersey':'NJ','New Mexico':'NM','New York':'NY','North Carolina':'NC','North Dakota':'ND','Ohio':'OH','Oklahoma':'OK','Oregon':'OR','Pennsylvania':'PA','Rhode Island':'RI','South Carolina':'SC','South Dakota':'SD','Tennessee':'TN','Texas':'TX','Utah':'UT','Vermont':'VT','Virginia':'VA','Washington':'WA','West Virginia':'WV','Wisconsin':'WI','Wyoming':'WY','American Samoa':'AS','Guam':'GU','Northern Mariana Islands':'MP','Puerto Rico':'PR',	'U.S. Virgin Islands':'VI'}
+
 def file_loader(filepath):
 	df = pd.read_csv(filepath, encoding='utf8')
 	return df
@@ -104,7 +107,13 @@ def clean(address, county='', state='', d_weight='', i_weight='', s_weight='', t
 		else:
 			address_dict[piece[1]] = piece[0]
 
+	# Normalize the state names to postal code
+	if state.title() in STATE_CODES:
+		state = STATE_CODES[state.title()]
+	
 	if 'StateName' in address_dict:
+		if address_dict['StateName'].title() in STATE_CODES:
+			address_dict['StateName'] = STATE_CODES[address_dict['StateName'].title()]
 		if state == '':
 			state = address_dict['StateName']
 		elif state != address_dict['StateName']:
